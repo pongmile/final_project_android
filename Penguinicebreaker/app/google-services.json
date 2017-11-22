@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "327389970212",
+    "firebase_url": "https://penguinice-80e11.firebaseio.com",
+    "project_id": "penguinice-80e11",
+    "storage_bucket": "penguinice-80e11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327389970212:android:1c0f1247ff81f436",
+        "android_client_info": {
+          "package_name": "com.pongmile.penguinicebreaker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "327389970212-dsdahts1fq9g8j6lbl5dfjv7dg8vafu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoDNpACQVygQdza5QPFoSmGwaNs3WVtPw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

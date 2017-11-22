@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Penguin icebreaker</string>
+    <string name="facebook_application_id" translatable="false">163077484435518</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb163077484435518</string>
 </resources>
