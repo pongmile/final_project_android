@@ -2,13 +2,10 @@ package com.pongmile.penguinicebreaker;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,12 +16,9 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.facebook.login.widget.ProfilePictureView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -32,10 +26,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -47,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private AccessToken fbAccessToken;
     private LoginButton loginButton;
-    private ProfilePictureView mProfilePictureView;
-    private String userPic;
+    private ImageView mProfilePictureView;
+    private Uri userPic;
+    private String userName;
     private TextView textView;
     private Profile profile;
 
@@ -75,10 +66,41 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
 
+            userName = currentUser.getDisplayName();
+            textView = findViewById(R.id.nameUser);
+            textView.setText(userName);
+
+            userPic = currentUser.getPhotoUrl();
+            textView = findViewById(R.id.textV);
+            textView.setText(String.valueOf(userPic));
+
+            /*URL img_value = null;
+            try {
+                img_value = new URL("String.valueOf(userPic)");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            Bitmap mIcon1 = null;
+            try {
+                mIcon1 = BitmapFactory.decodeStream(img_value.openConnection().getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+            mProfilePictureView = findViewById(R.id.imageFacebook);
+            mProfilePictureView.setImageBitmap(mIcon1);
+
+    */
+        }
+        else{
+
         }
     }
 
-    private void InitializeFacebook() {
+        private void InitializeFacebook () {
         mCallbackManager = CallbackManager.Factory.create();
         loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions("email", "public_profile");
@@ -87,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
 
-                userPic = loginResult.getAccessToken().getUserId();
+
+                Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_LONG).show();
 
                 handleFacebookAccessToken(loginResult.getAccessToken());
 
@@ -107,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
@@ -121,13 +145,12 @@ public class MainActivity extends AppCompatActivity {
 
                             currentUser = mAuth.getCurrentUser();
 
-                            userPic = currentUser.getDisplayName();
+                            userName = currentUser.getDisplayName();
 
                             textView = findViewById(R.id.nameUser);
-                            textView.setText(userPic);
+                            textView.setText(userName);
 
-                            /*mProfilePictureView = findViewById(R.id.profilePicture);
-                            mProfilePictureView.setProfileId(userPic);*/
+
 
 
 
