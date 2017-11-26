@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "327389970212-b9ernpof2c5k9stacpedgh249s1t5ejg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pongmile.penguinicebreaker",
+            "certificate_hash": "24d98834cbe08f2f866d0ed6510c40feab7ba1b4"
+          }
+        },
+        {
           "client_id": "327389970212-dsdahts1fq9g8j6lbl5dfjv7dg8vafu1.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "327389970212-dsdahts1fq9g8j6lbl5dfjv7dg8vafu1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

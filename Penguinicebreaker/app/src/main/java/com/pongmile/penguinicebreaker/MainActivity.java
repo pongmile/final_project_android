@@ -1,6 +1,10 @@
 package com.pongmile.penguinicebreaker;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +21,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,6 +31,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,49 +66,47 @@ public class MainActivity extends AppCompatActivity {
         AppEventsLogger.activateApp(this);
 
         InitializeFacebook();
+        currentUser = mAuth.getCurrentUser();
 
+
+    }
+
+    public void getInfo(){
+        userName = currentUser.getDisplayName();
+        textView = findViewById(R.id.nameUser);
+        textView.setText(userName);
+
+        userPic = currentUser.getPhotoUrl();
+        mProfilePictureView = findViewById(R.id.imageFacebook);
+        Picasso.with(this).load(userPic).resize(300, 300)
+                .centerCrop().into(mProfilePictureView);
 
     }
 
 
     @Override
     protected void onStart() {
-        super.onStart();
         currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
+        super.onStart();
+        profile = Profile.getCurrentProfile();
+        if (profile != null && currentUser != null) {
 
-            userName = currentUser.getDisplayName();
+            getInfo();
+
+        } else {
+            // user has not logged in
+            LoginManager.getInstance().logOut();
+            AccessToken.setCurrentAccessToken(null);
+
             textView = findViewById(R.id.nameUser);
-            textView.setText(userName);
-
-            userPic = currentUser.getPhotoUrl();
-            textView = findViewById(R.id.textV);
-            textView.setText(String.valueOf(userPic));
-
-            /*URL img_value = null;
-            try {
-                img_value = new URL("String.valueOf(userPic)");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            Bitmap mIcon1 = null;
-            try {
-                mIcon1 = BitmapFactory.decodeStream(img_value.openConnection().getInputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
+            textView.setText("Please Login");
 
             mProfilePictureView = findViewById(R.id.imageFacebook);
-            mProfilePictureView.setImageBitmap(mIcon1);
-
-    */
-        }
-        else{
+            Picasso.with(this).load("https://i.imgur.com/FdrUogq.jpg").resize(300, 300)
+                    .centerCrop().into(mProfilePictureView);
 
         }
+
     }
 
         private void InitializeFacebook () {
@@ -109,10 +118,18 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
 
-
                 Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_LONG).show();
 
+                currentUser = mAuth.getCurrentUser();
+
+                if (currentUser == null) {
+                    Toast.makeText(MainActivity.this, "Test", Toast.LENGTH_LONG).show();
+
+
+                }
+
                 handleFacebookAccessToken(loginResult.getAccessToken());
+
 
             }
 
@@ -120,13 +137,16 @@ public class MainActivity extends AppCompatActivity {
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
                 // ...
+
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                // ...
+
             }
+
+
         });
     }
 
@@ -143,15 +163,8 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
 
-                            currentUser = mAuth.getCurrentUser();
 
-                            userName = currentUser.getDisplayName();
-
-                            textView = findViewById(R.id.nameUser);
-                            textView.setText(userName);
-
-
-
+                            getInfo();
 
 
                         } else {
