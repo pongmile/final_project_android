@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etInviteEMail;
     private String MySample;
     private String PlayerSession="";
+    private int ActivePlayer = 1;
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
@@ -231,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                 .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
 
         //Laya// Jena  ="Laya:Jena"
-        StartGame(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()) );
+        StartGame(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()));
         MySample = "O";
     }
 
@@ -260,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                             else{
-                                etInviteEMail.setBackgroundColor(Color.BLUE);
+                                etInviteEMail.setBackgroundColor(Color.GREEN);
                             }
 
                         }catch (Exception ex){}
@@ -275,12 +277,50 @@ public class MainActivity extends AppCompatActivity {
     }
     void ButtonColor(){
         etInviteEMail.setBackgroundColor(Color.RED);
+        Toast.makeText(MainActivity.this, "You Have Invite to Play !!",
+                Toast.LENGTH_SHORT).show();
     }
 
     private void StartGame(String PlayerGameID) {
-
-        PlayerSession=PlayerGameID;
+        PlayerSession = PlayerGameID;
         myRef.child("Playing").child(PlayerGameID).removeValue();
+
+        myRef.child("Playing").child(PlayerGameID)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        try{
+                            Player1.clear();
+                            Player2.clear();
+                            ActivePlayer=2;
+                            HashMap<String,Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
+                            if (td!=null){
+
+                                String value;
+
+                                for(String key:td.keySet()){
+                                    value=(String) td.get(key);
+                                    if(!value.equals(BeforeAt(userEmail)))
+                                        ActivePlayer =MySample == "X"?1:2;
+                                    else
+                                        ActivePlayer = MySample == "X"?2:1;
+
+                                    String[] splitID = key.split(":");
+                                    AutoPlay(Integer.parseInt(splitID[1]));
+
+                                }
+                            }
+
+
+                        }catch (Exception ex){}
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                    }
+                });
     }
 
     public void BuClick(View view) {
@@ -288,8 +328,8 @@ public class MainActivity extends AppCompatActivity {
         if (PlayerSession.length()<=0)
             return;
 
-        Button buSelected= (Button) view;
-        int CellID=0;
+        Button buSelected = (Button) view;
+        int CellID = 0;
         switch ((buSelected.getId())){
 
             case R.id.bu1:
@@ -330,8 +370,150 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        myRef.child("Playing").child(PlayerSession).child( "CellID:"+CellID).setValue(BeforeAt(userEmail));
+        myRef.child("Playing").child(PlayerSession).child("CellID:"+CellID).setValue(BeforeAt(userEmail));
 
+    }
+
+    ArrayList<Integer> Player1= new ArrayList<Integer>();// hold player 1 data
+    ArrayList<Integer> Player2= new ArrayList<Integer>();// hold player 2 data
+
+    void PlayGame(int CellID,Button buSelected){
+
+        Log.d("Player:",String.valueOf(CellID));
+
+        if (ActivePlayer==1){
+            buSelected.setText("X");
+            buSelected.setBackgroundColor(Color.GREEN);
+            Player1.add(CellID);
+
+
+        }
+        else if (ActivePlayer==2){
+            buSelected.setText("O");
+            buSelected.setBackgroundColor(Color.BLUE);
+            Player2.add(CellID);
+
+
+        }
+
+        buSelected.setEnabled(false);
+        CheckWiner();
+    }
+
+    void CheckWiner(){
+        int Winer=-1;
+        //row 1
+        if (Player1.contains(1) && Player1.contains(2)  && Player1.contains(3))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(1) && Player2.contains(2)  && Player2.contains(3))  {
+            Winer=2 ;
+        }
+
+        //row 2
+        if (Player1.contains(4) && Player1.contains(5)  && Player1.contains(6))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(4) && Player2.contains(5)  && Player2.contains(6))  {
+            Winer=2 ;
+        }
+
+        //row 3
+        if (Player1.contains(7) && Player1.contains(8)  && Player1.contains(9))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(7) && Player2.contains(8)  && Player2.contains(9))  {
+            Winer=2 ;
+        }
+
+
+        //col 1
+        if (Player1.contains(1) && Player1.contains(4)  && Player1.contains(7))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(1) && Player2.contains(4)  && Player2.contains(7))  {
+            Winer=2 ;
+        }
+
+        //col 2
+        if (Player1.contains(2) && Player1.contains(5)  && Player1.contains(8))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(2) && Player2.contains(5)  && Player2.contains(8))  {
+            Winer=2 ;
+        }
+
+
+        //col 3
+        if (Player1.contains(3) && Player1.contains(6)  && Player1.contains(9))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(3) && Player2.contains(6)  && Player2.contains(9))  {
+            Winer=2 ;
+        }
+
+
+        if ( Winer !=-1){
+            // We have winer
+
+            if (Winer==1){
+                Toast.makeText(this,"Player 1 is winner",Toast.LENGTH_LONG).show();
+            }
+
+            if (Winer==2){
+                Toast.makeText(this,"Player 2 is winner",Toast.LENGTH_LONG).show();
+            }
+
+        }
+
+    }
+
+    void AutoPlay(int CellID){
+
+        Button buSelected;
+        switch (CellID){
+
+            case 1 :
+                buSelected=(Button) findViewById(R.id.bu1);
+                break;
+
+            case 2:
+                buSelected=(Button) findViewById(R.id.bu2);
+                break;
+
+            case 3:
+                buSelected=(Button) findViewById(R.id.bu3);
+                break;
+
+            case 4:
+                buSelected=(Button) findViewById(R.id.bu4);
+                break;
+
+            case 5:
+                buSelected=(Button) findViewById(R.id.bu5);
+                break;
+
+            case 6:
+                buSelected=(Button) findViewById(R.id.bu6);
+                break;
+
+            case 7:
+                buSelected=(Button) findViewById(R.id.bu7);
+                break;
+
+            case 8:
+                buSelected=(Button) findViewById(R.id.bu8);
+                break;
+
+            case 9:
+                buSelected=(Button) findViewById(R.id.bu9);
+                break;
+            default:
+                buSelected=(Button) findViewById(R.id.bu1);
+                break;
+
+        }
+        PlayGame(CellID, buSelected);
     }
 
 }
