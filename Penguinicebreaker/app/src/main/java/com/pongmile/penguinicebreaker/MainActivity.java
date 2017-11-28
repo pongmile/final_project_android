@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,12 +35,18 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,6 +63,15 @@ public class MainActivity extends AppCompatActivity {
     private String userName;
     private TextView textView;
     private Profile profile;
+    private String userEmail;
+    private String uid;
+    private EditText etInviteEMail;
+    private String MySample;
+    private String PlayerSession="";
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
+
 
 
     @Override
@@ -67,20 +86,35 @@ public class MainActivity extends AppCompatActivity {
 
         InitializeFacebook();
         currentUser = mAuth.getCurrentUser();
+        myRef.setValue("Hello, World!");
 
+        etInviteEMail = (EditText)findViewById(R.id.etInviteEmal);
 
     }
+
 
     public void getInfo(){
         userName = currentUser.getDisplayName();
         textView = findViewById(R.id.nameUser);
         textView.setText(userName);
 
+        uid = currentUser.getUid();
+        userEmail = currentUser.getEmail();
+        myRef.child("Users").child(BeforeAt(userEmail)).child("Req").setValue(uid);
+
+
         userPic = currentUser.getPhotoUrl();
         mProfilePictureView = findViewById(R.id.imageFacebook);
-        Picasso.with(this).load(userPic).resize(300, 300)
+        Picasso.with(this).load(userPic).resize(150, 150)
                 .centerCrop().into(mProfilePictureView);
 
+
+
+    }
+
+    String BeforeAt(String Email){
+        String[] split= Email.split("@");
+        return split[0];
     }
 
 
@@ -91,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
         profile = Profile.getCurrentProfile();
         if (profile != null && currentUser != null) {
 
+            userEmail = currentUser.getEmail();
+            IncommingRequest();
             getInfo();
 
         } else {
@@ -102,12 +138,13 @@ public class MainActivity extends AppCompatActivity {
             textView.setText("Please Login");
 
             mProfilePictureView = findViewById(R.id.imageFacebook);
-            Picasso.with(this).load("https://i.imgur.com/FdrUogq.jpg").resize(300, 300)
+            Picasso.with(this).load("https://i.imgur.com/FdrUogq.jpg").resize(150, 150)
                     .centerCrop().into(mProfilePictureView);
 
         }
 
     }
+
 
         private void InitializeFacebook () {
         mCallbackManager = CallbackManager.Factory.create();
@@ -120,16 +157,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_LONG).show();
 
-                currentUser = mAuth.getCurrentUser();
-
-                if (currentUser == null) {
-                    Toast.makeText(MainActivity.this, "Test", Toast.LENGTH_LONG).show();
-
-
-                }
-
+                IncommingRequest();
                 handleFacebookAccessToken(loginResult.getAccessToken());
-
 
             }
 
@@ -163,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
 
-
+                            currentUser = mAuth.getCurrentUser();
                             getInfo();
 
 
@@ -182,6 +211,127 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    public void BuInvite(View view) {
+        Log.d("Invate",etInviteEMail.getText().toString());
+        myRef.child("Users")
+                .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
+
+        // Jena //Laya  ="Laya:Jena"
+        StartGame(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail));
+        MySample = "X";
+
+    }
+
+    public void BuAccept(View view) {
+        Log.d("Accept",etInviteEMail.getText().toString());
+        myRef.child("Users")
+                .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
+
+        //Laya// Jena  ="Laya:Jena"
+        StartGame(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()) );
+        MySample = "O";
+    }
+
+
+    void IncommingRequest(){
+
+        // Read from the database
+        userEmail = currentUser.getEmail();
+        myRef.child("Users").child(BeforeAt(userEmail)).child("Req")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        try{
+                            HashMap<String,Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
+                            if (td!=null){
+
+                                String value;
+                                for(String key:td.keySet()){
+                                    value=(String) td.get(key);
+                                    Log.d("User request",value);
+                                    etInviteEMail.setText(value);
+                                    ButtonColor();
+                                    myRef.child("Users").child(BeforeAt(userEmail)).child("Req").setValue(uid);
+                                    break;
+                                }
+                            }
+                            else{
+                                etInviteEMail.setBackgroundColor(Color.BLUE);
+                            }
+
+                        }catch (Exception ex){}
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                    }
+                });
+
+    }
+    void ButtonColor(){
+        etInviteEMail.setBackgroundColor(Color.RED);
+    }
+
+    private void StartGame(String PlayerGameID) {
+
+        PlayerSession=PlayerGameID;
+        myRef.child("Playing").child(PlayerGameID).removeValue();
+    }
+
+    public void BuClick(View view) {
+        // game not started yet
+        if (PlayerSession.length()<=0)
+            return;
+
+        Button buSelected= (Button) view;
+        int CellID=0;
+        switch ((buSelected.getId())){
+
+            case R.id.bu1:
+                CellID=1;
+                break;
+
+            case R.id.bu2:
+                CellID=2;
+                break;
+
+            case R.id.bu3:
+                CellID=3;
+                break;
+
+            case R.id.bu4:
+                CellID=4;
+                break;
+
+            case R.id.bu5:
+                CellID=5;
+                break;
+
+            case R.id.bu6:
+                CellID=6;
+                break;
+
+            case R.id.bu7:
+                CellID=7;
+                break;
+
+            case R.id.bu8:
+                CellID=8;
+                break;
+
+            case R.id.bu9:
+                CellID=9;
+                break;
+        }
+
+
+        myRef.child("Playing").child(PlayerSession).child( "CellID:"+CellID).setValue(BeforeAt(userEmail));
+
     }
 
 }

@@ -18,10 +18,10 @@
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.277" />
+        app:layout_constraintVertical_bias="0.017" />
 
     <TextView
         android:id="@+id/nameUser"
@@ -30,38 +30,174 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageFacebook"
         app:layout_constraintEnd_toEndOf="@+id/login_button"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/login_button"
         app:layout_constraintTop_toBottomOf="@+id/login_button"
-        app:layout_constraintVertical_bias="0.037"
         tools:ignore="MissingConstraints" />
 
     <ImageView
         android:id="@+id/imageFacebook"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/login_button"
-        app:layout_constraintEnd_toEndOf="@+id/login_button"
-        app:layout_constraintStart_toStartOf="@+id/login_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal" />
+        app:layout_constraintBottom_toBottomOf="@+id/login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/login_button"
+        app:layout_constraintTop_toTopOf="@+id/login_button"
+        app:srcCompat="@drawable/profile" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="108dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/nameUser">
+
+        <EditText
+            android:id="@+id/etInviteEmal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textEmailAddress" />
+
+        <Button
+            android:id="@+id/buInvite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="BuInvite"
+            android:text="Invite" />
+
+        <Button
+            android:id="@+id/buAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="BuAccept"
+            android:text="Accept" />
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/bu1"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:layout_marginLeft="3pt"
+                android:layout_marginRight="3pt"
+                android:onClick="BuClick"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/bu2"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:layout_marginRight="3pt"
+                android:onClick="BuClick"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/bu3"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:onClick="BuClick"
+                android:text=" " />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/bu4"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:layout_marginLeft="3pt"
+                android:layout_marginRight="3pt"
+                android:onClick="BuClick"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/bu5"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:layout_marginRight="3pt"
+                android:onClick="BuClick"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/bu6"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:onClick="BuClick"
+                android:text=" " />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/bu7"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:layout_marginLeft="3pt"
+                android:layout_marginRight="3pt"
+                android:onClick="BuClick"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/bu8"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:layout_marginRight="3pt"
+                android:onClick="BuClick"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/bu9"
+                android:layout_width="50pt"
+                android:layout_height="50pt"
+                android:onClick="BuClick"
+                android:text=" " />
+        </TableRow>
+
+    </TableLayout>
 
 
 </android.support.constraint.ConstraintLayout>
