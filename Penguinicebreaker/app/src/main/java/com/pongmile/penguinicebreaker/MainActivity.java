@@ -51,25 +51,31 @@ import java.util.HashMap;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 0;
+    public static final int RC_SIGN_IN = 0;
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-    private static final String TAG = "MainActivity";
-    private CallbackManager mCallbackManager;
-    private AccessToken fbAccessToken;
-    private LoginButton loginButton;
-    private ImageView mProfilePictureView;
-    private Uri userPic;
-    private String userName;
-    private TextView textView;
-    private Profile profile;
-    private String userEmail;
-    private String uid;
-    private EditText etInviteEMail;
-    private String MySample;
-    private String PlayerSession="";
-    private int ActivePlayer = 1;
+    public FirebaseAuth mAuth;
+    public FirebaseUser currentUser;
+    public static final String TAG = "MainActivity";
+    public CallbackManager mCallbackManager;
+    public AccessToken fbAccessToken;
+    public LoginButton loginButton;
+    public ImageView mProfilePictureView;
+    public Uri userPic;
+    public String userName;
+    public TextView textView;
+    public Profile profile;
+    public String userEmail;
+    public String uid;
+    public EditText etInviteEMail;
+    public String MySample;
+    public TextView textcolor;
+    public String PlayerSession = "";
+    public String PlayerGameID;
+    public int ActivePlayer = 1;
+
+
+    public ArrayList<Integer> Player1= new ArrayList<Integer>();// hold player 1 data
+    public ArrayList<Integer> Player2= new ArrayList<Integer>();// hold player 2 data
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
@@ -89,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
         InitializeFacebook();
         currentUser = mAuth.getCurrentUser();
         myRef.setValue("Hello, World!");
+
+        textcolor = findViewById(R.id.textColor);
+        textcolor.setText("Wait");
 
         etInviteEMail = (EditText)findViewById(R.id.etInviteEmal);
 
@@ -237,8 +246,15 @@ public class MainActivity extends AppCompatActivity {
         MySample = "O";
     }
 
+    public void NewGame(View view){
 
-    void IncommingRequest(){
+        ButtonColorDef();
+        StopGame(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail));
+
+    }
+
+
+    public void IncommingRequest(){
 
         // Read from the database
         userEmail = currentUser.getEmail();
@@ -256,13 +272,13 @@ public class MainActivity extends AppCompatActivity {
                                     value=(String) td.get(key);
                                     Log.d("User request",value);
                                     etInviteEMail.setText(value);
-                                    ButtonColor();
+                                    ButtonColorInvite();
                                     myRef.child("Users").child(BeforeAt(userEmail)).child("Req").setValue(uid);
                                     break;
                                 }
                             }
                             else{
-                                etInviteEMail.setBackgroundColor(Color.GREEN);
+                                ButtonColorDef();
                             }
 
                         }catch (Exception ex){}
@@ -275,15 +291,19 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
-    void ButtonColor(){
+
+    private void ButtonColorInvite(){
         etInviteEMail.setBackgroundColor(Color.RED);
         Toast.makeText(MainActivity.this, "You Have Invite to Play !!",
                 Toast.LENGTH_SHORT).show();
     }
 
+    private void ButtonColorDef(){
+        etInviteEMail.setBackgroundColor(Color.GREEN);
+    }
+
     private void StartGame(String PlayerGameID) {
         PlayerSession = PlayerGameID;
-        myRef.child("Playing").child(PlayerGameID).removeValue();
 
         myRef.child("Playing").child(PlayerGameID)
                 .addValueEventListener(new ValueEventListener() {
@@ -293,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                         try{
                             Player1.clear();
                             Player2.clear();
-                            ActivePlayer=2;
+                            ActivePlayer = 2;
                             HashMap<String,Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
                             if (td!=null){
 
@@ -302,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                                 for(String key:td.keySet()){
                                     value=(String) td.get(key);
                                     if(!value.equals(BeforeAt(userEmail)))
-                                        ActivePlayer =MySample == "X"?1:2;
+                                        ActivePlayer = MySample == "X"?1:2;
                                     else
                                         ActivePlayer = MySample == "X"?2:1;
 
@@ -321,6 +341,16 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void StopGame(String PlayerGameID){
+        Player1.clear();
+        Player2.clear();
+
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+
     }
 
     public void BuClick(View view) {
@@ -372,12 +402,22 @@ public class MainActivity extends AppCompatActivity {
 
         myRef.child("Playing").child(PlayerSession).child("CellID:"+CellID).setValue(BeforeAt(userEmail));
 
+
+        if (MySample == "O"){
+            textcolor.setText("Your Color is Green");
+            textcolor.setTextColor(Color.GREEN);
+        }
+        else {
+            textcolor.setText("Your Color is Blue");
+            textcolor.setTextColor(Color.BLUE);
+        }
+
+
     }
 
-    ArrayList<Integer> Player1= new ArrayList<Integer>();// hold player 1 data
-    ArrayList<Integer> Player2= new ArrayList<Integer>();// hold player 2 data
 
-    void PlayGame(int CellID,Button buSelected){
+
+    private void PlayGame(int CellID,Button buSelected){
 
         Log.d("Player:",String.valueOf(CellID));
 
@@ -386,22 +426,20 @@ public class MainActivity extends AppCompatActivity {
             buSelected.setBackgroundColor(Color.GREEN);
             Player1.add(CellID);
 
-
         }
         else if (ActivePlayer==2){
             buSelected.setText("O");
             buSelected.setBackgroundColor(Color.BLUE);
             Player2.add(CellID);
-
-
         }
 
-        buSelected.setEnabled(false);
+        buSelected.setClickable(false);
         CheckWiner();
     }
 
-    void CheckWiner(){
-        int Winer=-1;
+
+    private void CheckWiner(){
+        int Winer = -1;
         //row 1
         if (Player1.contains(1) && Player1.contains(2)  && Player1.contains(3))  {
             Winer=1 ;
@@ -452,6 +490,20 @@ public class MainActivity extends AppCompatActivity {
             Winer=2 ;
         }
 
+        if (Player1.contains(3) && Player1.contains(5)  && Player1.contains(7))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(3) && Player2.contains(5)  && Player2.contains(7))  {
+            Winer=2 ;
+        }
+
+        if (Player1.contains(1) && Player1.contains(5)  && Player1.contains(9))  {
+            Winer=1 ;
+        }
+        if (Player2.contains(1) && Player2.contains(5)  && Player2.contains(9))  {
+            Winer=2 ;
+        }
+
 
         if ( Winer !=-1){
             // We have winer
@@ -468,7 +520,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void AutoPlay(int CellID){
+
+    private void AutoPlay(int CellID){
 
         Button buSelected;
         switch (CellID){
