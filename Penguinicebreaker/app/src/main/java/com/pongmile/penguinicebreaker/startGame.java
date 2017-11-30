@@ -25,7 +25,7 @@ import java.util.HashMap;
  */
 
 public class startGame{
-    public String useEmail;
+ /*   public String useEmail;
     public String MSample;
     public String PlayeSession = "";
     public String PlayeGameID;
@@ -89,5 +89,5 @@ public class startGame{
     String BeforeAt(String Email){
         String[] split= Email.split("@");
         return split[0];
-    }
+    }*/
 }

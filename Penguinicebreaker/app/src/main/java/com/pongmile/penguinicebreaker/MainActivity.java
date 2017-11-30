@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     public static final int RC_SIGN_IN = 0;
 
     public FirebaseAuth mAuth;
@@ -76,15 +76,16 @@ public class MainActivity extends AppCompatActivity{
     public String PlayerSession = "";
     public String PlayerGameID;
     public int ActivePlayer = 1;
+    public int whoRplay = 0;
 
-    //startGame startgame = new startGame();
 
 
-    public ArrayList<Integer> Player1= new ArrayList<Integer>();// hold player 1 data
-    public ArrayList<Integer> Player2= new ArrayList<Integer>();// hold player 2 data
+    public ArrayList<Integer> Player1 = new ArrayList<Integer>();// hold player 1 data
+    public ArrayList<Integer> Player2 = new ArrayList<Integer>();// hold player 2 data
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
+
 
 
     @Override
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-        private void InitializeFacebook () {
+    private void InitializeFacebook () {
         mCallbackManager = CallbackManager.Factory.create();
         loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions("email", "public_profile");
@@ -173,7 +174,6 @@ public class MainActivity extends AppCompatActivity{
 
                 Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_LONG).show();
 
-                IncommingRequest();
                 handleFacebookAccessToken(loginResult.getAccessToken());
 
             }
@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity{
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
 
+                            IncommingRequest();
                             currentUser = mAuth.getCurrentUser();
                             getInfo();
 
@@ -230,15 +231,12 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-
     public void BuInvite(View view) {
         Log.d("Invate",etInviteEMail.getText().toString());
         myRef.child("Users")
                 .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
 
         // Jena //Laya  ="Laya:Jena"
-
-        //startgame.startG(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail),PlayerSession,MySample,userEmail,ActivePlayer,Player1,Player2);
         StartGame(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail));
         MySample = "X";
 
@@ -250,7 +248,6 @@ public class MainActivity extends AppCompatActivity{
                 .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
 
         //Laya// Jena  ="Laya:Jena"
-        //startgame.startG(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()),PlayerSession,MySample,userEmail,ActivePlayer,Player1,Player2);
         StartGame(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()));
         MySample = "O";
     }
@@ -263,11 +260,12 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-
     public void IncommingRequest(){
 
         // Read from the database
+        currentUser = mAuth.getCurrentUser();
         userEmail = currentUser.getEmail();
+
         myRef.child("Users").child(BeforeAt(userEmail)).child("Req")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -353,8 +351,6 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
-
-
     private void StopGame(String PlayerGameID){
         Player1.clear();
         Player2.clear();
@@ -365,83 +361,133 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+
+
     public void BuClick(View view) {
         // game not started yet
         if (PlayerSession.length()<=0)
             return;
 
-        Button buSelected = (Button) view;
-        int CellID = 0;
-        switch ((buSelected.getId())){
+            Button buSelected = (Button) view;
+            int CellID = 0;
+            switch ((buSelected.getId())) {
 
-            case R.id.bu1:
-                CellID=1;
-                break;
+                case R.id.bu1:
+                    CellID = 1;
+                    break;
 
-            case R.id.bu2:
-                CellID=2;
-                break;
+                case R.id.bu2:
+                    CellID = 2;
+                    break;
 
-            case R.id.bu3:
-                CellID=3;
-                break;
+                case R.id.bu3:
+                    CellID = 3;
+                    break;
 
-            case R.id.bu4:
-                CellID=4;
-                break;
+                case R.id.bu4:
+                    CellID = 4;
+                    break;
 
-            case R.id.bu5:
-                CellID=5;
-                break;
+                case R.id.bu5:
+                    CellID = 5;
+                    break;
 
-            case R.id.bu6:
-                CellID=6;
-                break;
+                case R.id.bu6:
+                    CellID = 6;
+                    break;
 
-            case R.id.bu7:
-                CellID=7;
-                break;
+                case R.id.bu7:
+                    CellID = 7;
+                    break;
 
-            case R.id.bu8:
-                CellID=8;
-                break;
+                case R.id.bu8:
+                    CellID = 8;
+                    break;
 
-            case R.id.bu9:
-                CellID=9;
-                break;
+                case R.id.bu9:
+                    CellID = 9;
+                    break;
+
         }
-
-
         myRef.child("Playing").child(PlayerSession).child("CellID:"+CellID).setValue(BeforeAt(userEmail));
 
 
+
+
         if (MySample == "O"){
-            textcolor.setText("Your Color is Green");
-            textcolor.setTextColor(Color.GREEN);
+            textcolor.setText("Penguin : X");
+            textcolor.setTextColor(Color.GRAY);
+            whoRplay = 1;
         }
         else {
-            textcolor.setText("Your Color is Blue");
+            textcolor.setText("Ice : O");
             textcolor.setTextColor(Color.BLUE);
+            whoRplay = 2;
         }
 
 
     }
 
+    public void AutoPlay(int CellID){
+        Button buSelected;
+        switch (CellID){
 
+            case 1 :
+                buSelected= findViewById(R.id.bu1);
+                break;
 
-    private void PlayGame(int CellID,Button buSelected){
+            case 2:
+                buSelected= findViewById(R.id.bu2);
+                break;
+
+            case 3:
+                buSelected= findViewById(R.id.bu3);
+                break;
+
+            case 4:
+                buSelected= findViewById(R.id.bu4);
+                break;
+
+            case 5:
+                buSelected= findViewById(R.id.bu5);
+                break;
+
+            case 6:
+                buSelected= findViewById(R.id.bu6);
+                break;
+
+            case 7:
+                buSelected= findViewById(R.id.bu7);
+                break;
+
+            case 8:
+                buSelected= findViewById(R.id.bu8);
+                break;
+
+            case 9:
+                buSelected = findViewById(R.id.bu9);
+                break;
+            default:
+                buSelected= findViewById(R.id.bu1);
+                break;
+
+        }
+        PlayGame(CellID, buSelected);
+
+    }
+
+    public void PlayGame(int CellID, Button buSelected){
 
         Log.d("Player:",String.valueOf(CellID));
 
         if (ActivePlayer==1){
             buSelected.setText("X");
-            buSelected.setBackgroundColor(Color.GREEN);
+            buSelected.setBackgroundResource(R.drawable.penguin);
             Player1.add(CellID);
-
         }
         else if (ActivePlayer==2){
             buSelected.setText("O");
-            buSelected.setBackgroundColor(Color.BLUE);
+            buSelected.setBackgroundResource(R.drawable.ice_block_icon);
             Player2.add(CellID);
         }
 
@@ -517,69 +563,24 @@ public class MainActivity extends AppCompatActivity{
         }
 
 
-        if ( Winer !=-1){
+        if (Winer !=-1){
             // We have winer
 
-            if (Winer==1){
-                Toast.makeText(this,"Player 1 is winner",Toast.LENGTH_LONG).show();
+            if (Winer == whoRplay){
+                Toast.makeText(this,userName + " is Winer",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,userName + " is Winer",Toast.LENGTH_LONG).cancel();
+
             }
 
-            if (Winer==2){
-                Toast.makeText(this,"Player 2 is winner",Toast.LENGTH_LONG).show();
+            else{
+                Toast.makeText(this,"Other Player is Winer",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Other Player is Winer",Toast.LENGTH_LONG).cancel();
             }
 
         }
 
     }
 
-
-    public void AutoPlay(int CellID){
-
-        Button buSelected;
-        switch (CellID){
-
-            case 1 :
-                buSelected=(Button) findViewById(R.id.bu1);
-                break;
-
-            case 2:
-                buSelected=(Button) findViewById(R.id.bu2);
-                break;
-
-            case 3:
-                buSelected=(Button) findViewById(R.id.bu3);
-                break;
-
-            case 4:
-                buSelected=(Button) findViewById(R.id.bu4);
-                break;
-
-            case 5:
-                buSelected=(Button) findViewById(R.id.bu5);
-                break;
-
-            case 6:
-                buSelected=(Button) findViewById(R.id.bu6);
-                break;
-
-            case 7:
-                buSelected=(Button) findViewById(R.id.bu7);
-                break;
-
-            case 8:
-                buSelected=(Button) findViewById(R.id.bu8);
-                break;
-
-            case 9:
-                buSelected=(Button) findViewById(R.id.bu9);
-                break;
-            default:
-                buSelected=(Button) findViewById(R.id.bu1);
-                break;
-
-        }
-        PlayGame(CellID, buSelected);
-    }
 
     private void shareScreen(Uri uri) {
         Intent intent = new Intent();
