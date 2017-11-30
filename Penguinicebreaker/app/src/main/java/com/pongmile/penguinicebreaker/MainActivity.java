@@ -1,13 +1,10 @@
 package com.pongmile.penguinicebreaker;
 
-import android.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,14 +50,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     public static final int RC_SIGN_IN = 0;
 
     public FirebaseAuth mAuth;
@@ -83,13 +77,14 @@ public class MainActivity extends AppCompatActivity {
     public String PlayerGameID;
     public int ActivePlayer = 1;
 
+    //startGame startgame = new startGame();
+
 
     public ArrayList<Integer> Player1= new ArrayList<Integer>();// hold player 1 data
     public ArrayList<Integer> Player2= new ArrayList<Integer>();// hold player 2 data
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
-
 
 
     @Override
@@ -235,12 +230,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     public void BuInvite(View view) {
         Log.d("Invate",etInviteEMail.getText().toString());
         myRef.child("Users")
                 .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
 
         // Jena //Laya  ="Laya:Jena"
+
+        //startgame.startG(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail),PlayerSession,MySample,userEmail,ActivePlayer,Player1,Player2);
         StartGame(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail));
         MySample = "X";
 
@@ -252,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 .child(BeforeAt(etInviteEMail.getText().toString())).child("Req").push().setValue(userEmail);
 
         //Laya// Jena  ="Laya:Jena"
+        //startgame.startG(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()),PlayerSession,MySample,userEmail,ActivePlayer,Player1,Player2);
         StartGame(BeforeAt( BeforeAt(userEmail) + ":"+ etInviteEMail.getText().toString()));
         MySample = "O";
     }
@@ -262,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
         StopGame(BeforeAt(etInviteEMail.getText().toString()) +":"+ BeforeAt(userEmail));
 
     }
+
 
 
     public void IncommingRequest(){
@@ -352,6 +352,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 
     private void StopGame(String PlayerGameID){
         Player1.clear();
@@ -531,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void AutoPlay(int CellID){
+    public void AutoPlay(int CellID){
 
         Button buSelected;
         switch (CellID){
