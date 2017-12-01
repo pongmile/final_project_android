@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     public String PlayerGameID;
     public int ActivePlayer = 1;
     public int whoRplay = 0;
+    public int canPlay = 0;
 
 
 
@@ -284,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
                                     myRef.child("Users").child(BeforeAt(userEmail)).child("Req").setValue(uid);
                                     break;
                                 }
+                                canPlay = 1;
                             }
                             else{
                                 ButtonColorDef();
@@ -308,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void ButtonColorDef(){
         etInviteEMail.setBackgroundColor(Color.GREEN);
+        canPlay = 0;
     }
 
     private void StartGame(String PlayerGameID) {
@@ -336,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     String[] splitID = key.split(":");
                                     AutoPlay(Integer.parseInt(splitID[1]));
+                                    canPlay = 1;
 
                                 }
                             }
@@ -368,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
         if (PlayerSession.length()<=0)
             return;
 
+        if(canPlay == 1) {
             Button buSelected = (Button) view;
             int CellID = 0;
             switch ((buSelected.getId())) {
@@ -408,9 +413,10 @@ public class MainActivity extends AppCompatActivity {
                     CellID = 9;
                     break;
 
-        }
-        myRef.child("Playing").child(PlayerSession).child("CellID:"+CellID).setValue(BeforeAt(userEmail));
+            }
+            myRef.child("Playing").child(PlayerSession).child("CellID:" + CellID).setValue(BeforeAt(userEmail));
 
+        }
 
 
 
