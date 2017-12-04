@@ -99,4 +99,5 @@ FirebaseDatabase database = FirebaseDatabase.getInstance();
 # Link ของไฟล์ APK
 https://1drv.ms/u/s!Aqwul1mA_SVJgfoOHcq5jVId_FLGWg
 
-กำลัง upload ลง store อยู่ครับ
+# Link ของ App บน Google Play Store
+https://play.google.com/store/apps/details?id=com.pongmile.penguinicebreaker
